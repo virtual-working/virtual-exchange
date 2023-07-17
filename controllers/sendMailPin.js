@@ -4,11 +4,9 @@ var mailer = require("../mailer.js");
 let UserModel = require("../models/User");
 
 const sendMailPin = async (req, res) => {
-  console.log("req", req.body);
   var api_key_result = req.body.api_key;
   var email = req.body.email;
   let result = await authFile.apiKeyChecker(api_key_result);
-  console.log("result", result);
 
   if (result === true) {
     if (!email || email == undefined || email == null || email == "") {
@@ -35,7 +33,7 @@ const sendMailPin = async (req, res) => {
     }).exec();
 
     let pin = Math.floor(100000 + Math.random() * 900000);
-    let expireTime = Date.now() + 1 * 60 * 1000;
+    let expireTime = Date.now() + 5 * 60 * 1000;
     if (check) {
       check.pin = pin;
       check.status = 0;

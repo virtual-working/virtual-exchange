@@ -57,11 +57,11 @@ const login = async (req, res) => {
   console.log("IP: " + ip);
   var searchType = req.body.searchType;
   var deviceModel = "null";
-  var user_id = req.body.user_id;
+  // var user_id = req.body.user_id;
   var loginType = req.body.loginType;
   var pin = req.body.pin;
   let city = "";
-  console.log("here is user Id", user_id);
+  // console.log("here is user Id", user_id);
 
   if (req.body.deviceName != undefined) {
     deviceName = req.body.deviceName;
@@ -107,6 +107,8 @@ const login = async (req, res) => {
       UserApiKey = true;
     }
   }
+  var user_id = await User.findOne({ email: req.body.email }).exec();
+  user_id = user_id?._id;
 
   if (result === true || UserApiKey === true) {
     if (UserApiKey === true) {
@@ -123,16 +125,17 @@ const login = async (req, res) => {
 
     if (searchType == "email") {
       user = await User.findOne({
-        email: req.body.user,
+        email: req.body.email,
       }).exec();
+      console.log("user", user);
       if (user) {
         pass = await User.findOne({
-          email: req.body.user,
+          email: req.body.email,
         }).exec();
         console.log("pass", utilities.hashData(pass.password));
         console.log("req", utilities.hashData(req.body.password));
         user = await User.findOne({
-          email: req.body.user,
+          email: req.body.email,
           password: utilities.hashData(req.body.password),
         }).exec();
         if (!user) {
@@ -143,6 +146,7 @@ const login = async (req, res) => {
           });
         }
       }
+      console.log("user", user);
       let mailcheck = await MailVerificationModel.findOne({
         user_id: user._id,
         pin: pin,
@@ -156,13 +160,28 @@ const login = async (req, res) => {
           showableMessage: "Incorrect Mail Pin",
           message: "incorrect_mail_pin",
         });
+      let filter = {};
+
+      filter.expiryTime = { $gt: Date.now() };
+      filter.user_id = user._id;
+      let mailcheckForExpiry = await MailVerificationModel.findOne({
+        filter,
+      }).exec();
+      console.log("mailcheckForExpiry", mailcheckForExpiry);
+      if (mailcheckForExpiry == null) {
+        return res.json({
+          status: "fail",
+          message: "Pin_time_expired",
+          showableMessage: "Pin Time has been expired",
+        });
+      }
     } else {
       user = await User.findOne({
-        phone_number: req.body.user,
+        phone_number: req.body.email,
       }).exec();
       if (user) {
         user = await User.findOne({
-          phone_number: req.body.user,
+          phone_number: req.body.email,
           password: utilities.hashData(req.body.password),
         }).exec();
 
@@ -186,6 +205,21 @@ const login = async (req, res) => {
           showableMessage: "Incorrect SMS Pin",
           message: "incorrect_sms_pin",
         });
+      let filter = {};
+
+      filter.expiryTime = { $gt: Date.now() };
+      filter.user_id = user._id;
+      let smsPinExpiryCheck = await SMSVerificationModel.findOne({
+        filter,
+      }).exec();
+      console.log("smsPinExpiryCheck", smsPinExpiryCheck);
+      if (smsPinExpiryCheck == null) {
+        return res.json({
+          status: "fail",
+          message: "Pin_time_expired",
+          showableMessage: "Pin Time has been expired",
+        });
+      }
     }
 
     let securityLevel = 0;

@@ -1,6 +1,4 @@
 const User = require("../../models/User");
-const RegisterMail = require("../../models/RegisterMail");
-const RegisterSMS = require("../../models/RegisterSMS");
 const MailVerification = require("../../models/MailVerification");
 const SMSVerification = require("../../models/SMSVerification");
 var authFile = require("../../auth.js");
@@ -22,52 +20,6 @@ const forgotPassword = async function (req, res) {
       status: 1,
     }).exec();
     if (user != null) {
-      var email = user["email"];
-      var phone = user["phone_number"];
-      let check1 = "";
-      let check3 = "";
-
-      if (email != undefined && email != null && email != "") {
-        check1 = await MailVerification.findOne({
-          user_id: user_id,
-          reason: "change_password",
-          pin: req.body.mailPin,
-          status: 0,
-        }).exec();
-        if (!check1)
-          return res.json({
-            status: "fail",
-            message: "verification_failed",
-            showableMessage: "Wrong Mail Pin",
-          });
-      }
-
-      if (phone != undefined && phone != null && phone != "") {
-        check3 = await SMSVerification.findOne({
-          user_id: user_id,
-          reason: "change_password",
-          pin: req.body.smsPin,
-          status: 0,
-        }).exec();
-
-        if (!check3)
-          return res.json({
-            status: "fail",
-            message: "verification_failed",
-            showableMessage: "Wrong SMS Pin",
-          });
-      }
-
-      if (check1 != "") {
-        check1.status = 1;
-        check1.save();
-      }
-
-      if (check3 != "") {
-        check3.status = 1;
-        check3.save();
-      }
-
       user.password = utilities.hashData(password);
       console.log("user", user, utilities.hashData(password));
       await user.save();
@@ -130,5 +82,69 @@ const forgotPassword = async function (req, res) {
     });
   }
 };
+const forgetPinCheck = async function (req, res) {
+  var user_id = req.body.user_id;
+  var api_key_result = req.body.api_key;
+  let result = await authFile.apiKeyChecker(api_key_result);
+  if (result === true) {
+    let user = await User.findOne({
+      _id: user_id,
+      status: 1,
+    }).exec();
+    if (user != null) {
+      var email = user["email"];
+      var phone = user["phone_number"];
 
-module.exports = forgotPassword;
+      if (email != undefined && email != null && email != "") {
+        check1 = await MailVerification.findOne({
+          user_id: user_id,
+          reason: "change_password",
+          pin: req.body.mailPin,
+          status: 0,
+        }).exec();
+        if (!check1)
+          return res.json({
+            status: "fail",
+            message: "verification_failed",
+            showableMessage: "Wrong Mail Pin",
+          });
+      }
+
+      if (phone != undefined && phone != null && phone != "") {
+        check3 = await SMSVerification.findOne({
+          user_id: user_id,
+          reason: "change_password",
+          pin: req.body.smsPin,
+          status: 0,
+        }).exec();
+
+        if (!check3)
+          return res.json({
+            status: "fail",
+            message: "verification_failed",
+            showableMessage: "Wrong SMS Pin",
+          });
+      }
+
+      return res.json({
+        status: "success",
+        message: "Your are good to go",
+        showableMessage: "You are good to go",
+      });
+    } else {
+      return res.json({
+        status: "fail",
+        message: "user_not_found",
+        showableMessage: "User not found",
+      });
+    }
+  } else {
+    res.json({
+      status: "fail",
+      message: "403 Forbidden",
+      showableMessage: "403 Forbidden",
+    });
+  }
+};
+
+module.exports = { forgotPassword, forgetPinCheck };

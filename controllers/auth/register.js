@@ -16,7 +16,7 @@ const phoneNumberUtil = PhoneNumberUtil.getInstance();
 const registerController = async (req, res) => {
   try {
     var registerType = req.body.registerType;
-    var data = req.body.data;
+    var data = req.body.email;
     var pin = req.body.pin;
 
     var refStatus = "false";

@@ -6,6 +6,7 @@ const MailVerificationSchema = new mongoose.Schema({
   reason: { type: String, required: false },
   status: { type: String, required: false, default: "0" },
   user_id: { type: String, required: false, default: "null" },
+  expiryTime: { type: Date, default: Date.now },
   createdAt: {
     type: Date,
     default: Date.now,

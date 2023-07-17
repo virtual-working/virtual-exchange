@@ -9,11 +9,10 @@ const {
   generateUsername,
 } = require("unique-username-generator");
 
-const checkRegister = async (req, res) => {
+const checkUser = async (req, res) => {
   try {
     var registerType = req.body.registerType;
     var data = req.body.data;
-    var reffer = req.body.reffer;
     if (registerType == "email") {
       if (!data || data == undefined || data == null || data == "") {
         return res.json({
@@ -22,34 +21,35 @@ const checkRegister = async (req, res) => {
           showableMessage: "Email is required",
         });
       }
-
       let checkEmailUnique = await User.findOne({
         email: data,
       }).exec();
 
-      if (checkEmailUnique) {
+      if (!checkEmailUnique) {
         return res.json({
           status: "fail",
-          message: "email_already_registered",
-          showableMessage: "Email already registered",
+          message: "email_not_registered",
+          showableMessage: "Email not registered",
         });
       }
 
-      if (reffer) {
-        let userReffer = await UserRef.findOne({ refCode: reffer }).exec();
-        if (!userReffer) {
-          return res.json({
-            status: "fail",
-            message: "reffer_user_not_found",
-            showableMessage: "Reffer User not Exist",
-          });
-        }
+      let checkEmaipasslUnique = await User.findOne({
+        email: data,
+        password: utilities.hashData(req.body.password),
+      }).exec();
+
+      if (!checkEmaipasslUnique) {
+        return res.json({
+          status: "fail",
+          message: "email_password_incorrect",
+          showableMessage: "Email or password are Incorrect",
+        });
       }
 
       return res.json({
         status: "success",
-        message: "email_not_registered",
-        showableMessage: "Email not registered",
+        message: "email_registered",
+        showableMessage: "Email registered",
       });
     }
 
@@ -76,27 +76,18 @@ const checkRegister = async (req, res) => {
         phone_number: req.body.data,
       }).exec();
 
-      if (checkPhoneUnique) {
+      if (!checkPhoneUnique) {
         return res.json({
           status: "fail",
-          message: "phone_already_registered",
-          showableMessage: "Phone already registered",
+          message: "phone_not_registered",
+          showableMessage: "Phone not registered",
         });
       }
-      if (reffer) {
-        let userReffer = await UserRef.findOne({ refCode: reffer }).exec();
-        if (!userReffer) {
-          return res.json({
-            status: "fail",
-            message: "reffer_user_not_found",
-            showableMessage: "Reffer User not Exist",
-          });
-        }
-      }
+
       return res.json({
         status: "success",
-        message: "phone_not_registered",
-        showableMessage: "Phone not registered",
+        message: "phone_registered",
+        showableMessage: "Phone registered",
       });
     }
   } catch (error) {
@@ -108,4 +99,4 @@ const checkRegister = async (req, res) => {
   }
 };
 
-module.exports = checkRegister;
+module.exports = checkUser;

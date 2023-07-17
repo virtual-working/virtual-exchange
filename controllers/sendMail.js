@@ -44,7 +44,7 @@ const sendMail = async function (req, res) {
         });
       }
       var pin = Math.floor(100000 + Math.random() * 900000);
-
+      let expireTime = Date.now() + 3 * 60 * 1000;
       if (reason == "change_email_new") {
         if (
           req.body.newMail == "" ||
@@ -79,7 +79,7 @@ const sendMail = async function (req, res) {
         if (check != null) {
           await MailVerification.findOneAndUpdate(
             { user_id: user["_id"], reason: "change_email_new" },
-            { pin: pin, status: 0 }
+            { pin: pin, status: 0, expiryTime: expireTime }
           );
         } else {
           newPin = new MailVerification({
@@ -87,6 +87,7 @@ const sendMail = async function (req, res) {
             pin: pin,
             reason: "change_email_new",
             status: 0,
+            expiryTime: expireTime,
           });
           newPin.save();
         }
@@ -121,7 +122,7 @@ const sendMail = async function (req, res) {
         if (check != null) {
           MailVerification.updateOne(
             { user_id: user["_id"], reason: reason },
-            { pin: pin, status: "0" },
+            { pin: pin, status: "0", expiryTime: expireTime },
             function (err, result) {
               if (err) {
                 res.json({ status: "fail", message: err });
@@ -135,6 +136,7 @@ const sendMail = async function (req, res) {
             user_id: user["_id"],
             pin: pin,
             reason: reason,
+            expiryTime: expireTime,
             status: 0,
           });
           newPin.save(function (err) {

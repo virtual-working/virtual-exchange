@@ -287,7 +287,11 @@ const {
 } = require("./controllers/withdraw/withdrawCurrency.js");
 const { getImages, uploadImage } = require("./controllers/imageUpload.js");
 const checkRegister = require("./controllers/auth/checkRegister.js");
-const forgotPassword = require("./controllers/users/forgotPassoword.js");
+const {
+  forgotPassword,
+  forgetPinCheck,
+} = require("./controllers/users/forgotPassoword.js");
+const checkUser = require("./controllers/auth/checkUser.js");
 
 route.use(
   session({
@@ -578,8 +582,10 @@ route.all("/changePhone", upload.none(), changePhone);
 route.all("/get2fa", upload.none(), get2fa);
 route.all("/getUserInfo", upload.none(), getUserInfo);
 route.all("/updateUserInfo", upload.none(), updateUserInfo);
-route.post("/checkUser", upload.none(), checkRegister);
+route.post("/checkUserRegister", upload.none(), checkRegister);
+route.post("/checkUser", upload.none(), checkUser);
 route.post("/forgetPassword", upload.none(), forgotPassword);
+route.all("/forgetPinCheck", upload.none(), forgetPinCheck);
 route.all("/testMail", upload.none(), async function (req, res) {
   mailer.sendMail(
     "faheem.hussainctn1@gmail.com",
