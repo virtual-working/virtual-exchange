@@ -100,6 +100,36 @@ const withdrawOther = async (req, res) => {
   let userBalance = await getBalance(fromAddress);
   const gasPrice = await web3.eth.getGasPrice();
 
+  ////send tokens
+
+  // const contractMetho = contractOfTransferIn.methods.curTransfer(
+  //   recipientAddress,
+  //   com
+  // );
+  // const account = web3.eth.accounts.privateKeyToAccount(
+  //   getUserWallet.private_key
+  // );
+  // web3.eth.accounts.wallet.add(account);
+  // web3.eth.defaultAccount = account.address;
+  // let fromAddressUseNode = account.address;
+  // // tokenContractAddress
+
+  let tokenBalance = await contractOfTransfer.methods
+    .getUserTokenBalance(tokenContractAddress, fromAddress)
+    .call();
+  console.log("tokenBalance", tokenBalance);
+  tokenBalance = web3.utils.fromWei(tokenBalance);
+  tokenBalance = parseFloat(tokenBalance);
+  console.log("tokenBalance", tokenBalance);
+
+  if (parseFloat(tokenBalance) < parseFloat(amounts))
+    return res.json({
+      success: "success",
+      showableMessage: "coin balacne is low",
+      message: "coin_balance_low",
+    });
+  // return;
+
   let commission = 0.001; ////commission set for now
   let result = parseInt(amounts / 1000);
   result += 1;
@@ -216,15 +246,20 @@ const withdrawOther = async (req, res) => {
               amount: amounts,
               network_id: network_id,
               to: recipientAddress,
-              fee: 0.0,
+              fee: web3.utils.fromWei(commission),
               tx_id: receipt.transactionHash,
               status: 1,
             });
 
             await data.save();
-
-            fromWallet.amount =
-              parseFloat(fromWallet.amount) - parseFloat(amounts);
+            let tokenBalanceFromWallet = await contractOfTransfer.methods
+              .getUserTokenBalance(tokenContractAddress, fromAddress)
+              .call();
+            console.log("tokenBalanceFromWallet", tokenBalanceFromWallet);
+            tokenBalanceFromWallet = web3.utils.fromWei(tokenBalanceFromWallet);
+            tokenBalanceFromWallet = parseFloat(tokenBalanceFromWallet);
+            fromWallet.amount = tokenBalanceFromWallet;
+            // parseFloat(fromWallet.amount) - parseFloat(amounts);
 
             await fromWallet.save();
 
@@ -537,7 +572,7 @@ const withdrawNative = async (req, res) => {
         amount: amounts,
         network_id: network_id,
         to: recipientAddress,
-        fee: commission,
+        fee: web3.utils.fromWei(commission),
         tx_id: resss.transactionHash,
         status: 1,
       });
@@ -546,9 +581,12 @@ const withdrawNative = async (req, res) => {
         user_id: user_id,
         coin_id: coin_id,
       }).exec();
-      let updatedAmount = parseFloat(fromWallet.amount) - parseFloat(total);
-      console.log("updatedAmount", updatedAmount);
-      fromWallet.amount = updatedAmount;
+      // let updatedAmount = parseFloat(fromWallet.amount) - parseFloat(total);
+      // console.log("updatedAmount", updatedAmount);
+
+      // fromWallet.amount = updatedAmount;
+      let userBalanceUpadated = await getBalance(fromAddress);
+      fromWallet.amount = userBalanceUpadated;
       // console.log(
       //   "fromWallet amount after",
       //   parseFloat(fromWallet.amount) - parseFloat(total)

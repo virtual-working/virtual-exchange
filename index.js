@@ -292,6 +292,8 @@ const {
   forgetPinCheck,
 } = require("./controllers/users/forgotPassoword.js");
 const checkUser = require("./controllers/auth/checkUser.js");
+const getCoinInfoAllNetworks = require("./controllers/coin/getCoinAllNetworks.js");
+const getCoinInfoForNetwork = require("./controllers/coin/getCoinInfoOfNetwork.js");
 
 route.use(
   session({
@@ -538,6 +540,8 @@ route.all("/getDigits", upload.none(), getDigits);
 route.all("/getCoinList", upload.none(), getCoinList);
 route.all("/getCoinNetworks", upload.none(), depositCoinNetworkOptions);
 route.all("/getCoinInfo", upload.none(), getCoinInfo);
+route.post("/getCoinInfoAllNetworks", getCoinInfoAllNetworks);
+route.post("/getCoinOfNetwork", getCoinInfoForNetwork);
 route.all("/getPairDetails", upload.none(), getPairDetails);
 //Referral Modules
 route.all("/getReferral", upload.none(), getReferral);

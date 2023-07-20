@@ -1572,7 +1572,11 @@ const login = async (req, res) => {
             return res.json({ status: "success", data: data });
           }
         } else {
-          return res.json({ status: "success", data: data });
+          return res.json({
+            status: "success",
+            showableMessage: "success",
+            data: data,
+          });
         }
       }
       if (status == "0") {

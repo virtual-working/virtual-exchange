@@ -4,6 +4,7 @@ const { uploadImage } = require("../imageUpload");
 const fs = require("fs");
 const path = require("path");
 const Image = require("../../models/image");
+const Network = require("../../models/Network");
 
 const addCoin = async (req, res) => {
   var api_key_result = req.body.api_key;
@@ -19,6 +20,18 @@ const addCoin = async (req, res) => {
       status: "success",
       showablemessage: "Coin already added",
       data: "Coin already added",
+    });
+  }
+  const checkNetwork = await Network.findOne({
+    name: req.body.network,
+    status: 1,
+  }).exec();
+
+  if (checkNetwork == null) {
+    return res.json({
+      status: "success",
+      showablemessage: "Network not found",
+      data: "Network_not_found",
     });
   }
   console.log("req", req.file);

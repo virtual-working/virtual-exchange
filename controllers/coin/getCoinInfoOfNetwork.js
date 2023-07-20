@@ -1,13 +1,18 @@
 const CoinList = require("../../models/CoinList");
 var authFile = require("../../auth.js");
 
-const getCoinInfo = async function (req, res) {
+const getCoinInfoForNetwork = async function (req, res) {
   var api_key_result = req.body.api_key;
 
   var result = await authFile.apiKeyChecker(api_key_result);
 
   if (result === true) {
-    CoinList.findOne({ _id: req.body.coin_id })
+    CoinList.findOne({
+      name: req.body.name,
+      symbol: req.body.symbol,
+      network: req.body.network,
+      status: 1,
+    })
       .then((coins) => {
         res.json({
           status: "success",
@@ -27,4 +32,4 @@ const getCoinInfo = async function (req, res) {
   }
 };
 
-module.exports = getCoinInfo;
+module.exports = getCoinInfoForNetwork;

@@ -81,8 +81,14 @@ const getCoinList = async function (req, res) {
 
     let amounst = await Wallet.find({ user_id: user_id });
     let result = await parseCoins(coins, amounst);
+    let map = new Map(result.map((item) => [item.name + item.symbol, item]));
+    let uniqueArray = Array.from(map.values());
 
-    res.json({ status: "success", showableMessage: "success", data: result });
+    res.json({
+      status: "success",
+      showableMessage: "success",
+      data: uniqueArray,
+    });
   } else {
     res.json({
       status: "fail",

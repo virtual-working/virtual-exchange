@@ -32,9 +32,12 @@ const getWalletBalance = async function (req, res) {
       return;
     }
   }
-  let coin = await CoinList.findOne({ symbol: req.body.symbol, status: 1 });
+  let coin = await CoinList.findOne({
+    symbol: req.body.symbol,
+    status: 1,
+  }).exec();
+  console.log("coin", coin);
   let id = coin._id.toString();
-  console.log("id", id);
   var _wallets = await Wallet.findOne({
     user_id: req.body.user_id,
     coin_id: id,
