@@ -108,7 +108,7 @@ const login = async (req, res) => {
     }
   }
   var user_id = await User.findOne({ email: req.body.email }).exec();
-  user_id = user_id?._id;
+  user_id = user_id._id;
 
   if (result === true || UserApiKey === true) {
     if (UserApiKey === true) {
@@ -223,7 +223,7 @@ const login = async (req, res) => {
     }
 
     let securityLevel = 0;
-    if (user?.deleted) {
+    if (user.deleted) {
       return res.json({
         status: "fail",
         message: "user deleted",
@@ -1330,9 +1330,9 @@ const login = async (req, res) => {
 
       if (status == "1") {
         let coins = await CoinList.find({ status: 1 }).exec();
-        console.log("coins", coins);
+        // console.log("coins", coins);
         let networks = await Network.find({ status: 1 }).exec();
-        console.log("networks", networks);
+        // console.log("networks", networks);
 
         // for (let x = 0; x < networks.length; x++) {
         //   let walletAddressCheck = await WalletAddress.findOne({

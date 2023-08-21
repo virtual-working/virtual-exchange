@@ -14,17 +14,29 @@ const getCoinInfoForNetwork = async function (req, res) {
       status: 1,
     })
       .then((coins) => {
-        res.json({
+        // console.log("coins", coins);
+        if (coins == null) {
+          return res.json({
+            status: "fail",
+            showableMessage: "Wallet not found",
+            message: "Wallet_not_found",
+          });
+        }
+        return res.json({
           status: "success",
-          showableMessage: "success",
+          showableMessage: "Wallet found",
           data: coins,
         });
       })
       .catch((err) => {
-        res.json({ status: "fail", showableMessage: "fail", message: err });
+        return res.json({
+          status: "fail",
+          showableMessage: "fail",
+          message: err,
+        });
       });
   } else {
-    res.json({
+    return res.json({
       status: "fail",
       showableMessage: "Forbidden 403",
       message: "Forbidden 403",

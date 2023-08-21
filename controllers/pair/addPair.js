@@ -36,8 +36,8 @@ const addPair = async function (req, res) {
       symbolTwoID: req.body.symbolTwoID,
     });
 
-    newPair.save();
-    res.json({ status: "success", data: newPair });
+    await newPair.save();
+    res.json({ status: "success", showableMessage: "success", data: newPair });
   } else {
     res.json({ status: "fail", message: "Forbidden 403" });
   }

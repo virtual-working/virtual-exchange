@@ -58,10 +58,11 @@ const createWalletOnSpecificNetwork = async function (req, res) {
       status: 1,
     }).exec();
     console.log("networkCheck", networkCheck);
-    if (networkCheck.symbol == "BSC") {
+    if (networkCheck?.symbol == "BSC") {
       // let url = "http://" + process.env.BSC20HOST + "/create_address";
       // let walletTest = await axios.post(url);
-      const web3 = new Web3("https://bsc-dataseed.binance.org/");
+      // const web3 = new Web3("https://bsc-dataseed.binance.org/");
+      const web3 = new Web3(process.env.web3Url);
       let walletTest = await web3.eth.accounts.create();
       console.log("wallet", walletTest);
       privateKey = walletTest.privateKey;
@@ -71,7 +72,7 @@ const createWalletOnSpecificNetwork = async function (req, res) {
         network: networkCheck.name,
         status: 1,
       }).exec();
-      console.log("coins", coins);
+      // console.log("coins", coins);
       for (let i = 0; i < coins.length; i++) {
         const newWallet = new Wallet({
           coinName: coins[i]["name"],
@@ -115,7 +116,7 @@ const createWalletOnSpecificNetwork = async function (req, res) {
       user_id: req.body.user_id,
       coin_id: req.body.coin_id,
     }).exec();
-    console.log("wallets", wallets);
+    // console.log("wallets", wallets);
     if (wallets != null) {
       return res.json({
         status: "Success",
@@ -132,7 +133,7 @@ const createWalletOnSpecificNetwork = async function (req, res) {
         network: networkCheck.name,
         status: 1,
       }).exec();
-      console.log("coins", coins);
+      // console.log("coins", coins);
       if (coins.length == 0)
         return res.json({
           status: "success",

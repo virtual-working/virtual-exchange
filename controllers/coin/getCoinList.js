@@ -26,7 +26,6 @@ var mailer = require("../../mailer.js");
 var CopyTrade = require("../../CopyTrade.js");
 const CopyTradeModel = require("../../models/CopyTrade");
 const Connection = require("../../Connection");
-const { Console } = require("console");
 const { exit } = require("process");
 const auth = require("../../auth.js");
 const MarginOrder = require("../../models/MarginOrder");
@@ -68,29 +67,37 @@ const calcCoinValue = async (coin, amount) => {
 };
 
 const getCoinList = async function (req, res) {
-  var api_key_result = req.body.api_key;
-  var user_id = req.body.user_id;
+  try {
+    var api_key_result = req.body.api_key;
+    var user_id = req.body.user_id;
 
-  var result = await authFile.apiKeyChecker(api_key_result);
+    var result = await authFile.apiKeyChecker(api_key_result);
 
-  if (result === true) {
-    var coins = await CoinList.find({ status: 1 })
-      .populate({ path: "image_url", model: "Image" })
-      .exec();
-    console.log("coins", coins);
+    if (result === true) {
+      var coins = await CoinList.find({ status: 1 })
+        .populate({ path: "image_url", model: "Image" })
+        .exec();
+      // console.log("coins", coins);
 
-    let amounst = await Wallet.find({ user_id: user_id });
-    let result = await parseCoins(coins, amounst);
-    let map = new Map(result.map((item) => [item.name + item.symbol, item]));
-    let uniqueArray = Array.from(map.values());
+      let amounst = await Wallet.find({ user_id: user_id });
+      let result = await parseCoins(coins, amounst);
+      let map = new Map(result.map((item) => [item.name + item.symbol, item]));
+      let uniqueArray = Array.from(map.values());
 
-    res.json({
-      status: "success",
-      showableMessage: "success",
-      data: uniqueArray,
-    });
-  } else {
-    res.json({
+      res.json({
+        status: "success",
+        showableMessage: "success",
+        data: uniqueArray,
+      });
+    } else {
+      return res.json({
+        status: "fail",
+        showableMessage: "Forbidden 403",
+        message: "Forbidden 403",
+      });
+    }
+  } catch (error) {
+    return res.json({
       status: "fail",
       showableMessage: "Forbidden 403",
       message: "Forbidden 403",

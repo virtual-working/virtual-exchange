@@ -49,7 +49,7 @@ const addOrders = async function (req, res) {
     let amount = req.body.amount;
 
     var getPair = await Pairs.findOne({ name: req.body.pair_name }).exec();
-    console.log("getPair", getPair);
+
     if (getPair == null || getPair == undefined || getPair == "") {
       return res.json({
         status: "fail",
@@ -58,7 +58,8 @@ const addOrders = async function (req, res) {
       });
     }
 
-    if (amount <= 0 || percent <= 0) {
+    // if (amount <= 0 || percent <= 0) {
+    if (amount <= 0) {
       res.json({
         status: "fail",
         showableMessage: "Invalid Amount",

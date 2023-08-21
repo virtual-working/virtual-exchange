@@ -36,7 +36,7 @@ const getWallet = async function (req, res) {
   var _wallets = await Wallet.find({
     user_id: req.body.user_id,
   }).exec();
-  console.log("_wallets", _wallets.length);
+  // console.log("_wallets", _wallets.length);
   if (_wallets.length == 0)
     return res.json({
       status: "success",

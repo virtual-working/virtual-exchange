@@ -11,7 +11,7 @@ var authFile = require("../../auth.js");
 const Withdraw = require("../../models/Withdraw");
 const Wallet = require("../../models/Wallet");
 const MailVerification = require("../../models/MailVerification");
-const web3 = new Web3("https://data-seed-prebsc-1-s2.binance.org:8545");
+const web3 = new Web3(process.env.web3Url);
 // const withdrawOther = async (req, res) => {};
 const withdrawOther = async (req, res) => {
   var user_id = req.body.user_id;
@@ -20,7 +20,7 @@ const withdrawOther = async (req, res) => {
   var recipientAddress = req.body.toAddress;
   var amounts = req.body.amount;
   var api_key_result = req.body.api_key;
-  var mailPin = req.body.mailPin;
+  // var mailPin = req.body.mailPin;
   ////checking api key auth
   let api_result = await authFile.apiKeyChecker(api_key_result);
   let apiRequest = "";
@@ -68,7 +68,7 @@ const withdrawOther = async (req, res) => {
   // Connect to the Binance Smart Chain testnet
   // const web3 = new Web3("https://data-seed-prebsc-1-s2.binance.org:8545");
 
-  const contractAddress = "0x759b1Ec87ECE6756C6a6B99BC324f43D1c7Dd028"; // Replace with the actual address on the testnet
+  const contractAddress = process.env.contractAddress; // Replace with the actual address on the testnet
 
   const getUserWallet = await WalletAddress.findOne({
     user_id: user_id,
@@ -117,10 +117,10 @@ const withdrawOther = async (req, res) => {
   let tokenBalance = await contractOfTransfer.methods
     .getUserTokenBalance(tokenContractAddress, fromAddress)
     .call();
-  console.log("tokenBalance", tokenBalance);
+  // console.log("tokenBalance", tokenBalance);
   tokenBalance = web3.utils.fromWei(tokenBalance);
   tokenBalance = parseFloat(tokenBalance);
-  console.log("tokenBalance", tokenBalance);
+  // console.log("tokenBalance", tokenBalance);
 
   if (parseFloat(tokenBalance) < parseFloat(amounts))
     return res.json({
@@ -174,28 +174,29 @@ const withdrawOther = async (req, res) => {
         let receiverAddress = await WalletAddress.findOne({
           wallet_address: recipientAddress,
         }).exec();
-        console.log("receiverAddress", receiverAddress);
-        // console.log("wallet_address", receiverAddress.wallet_address);
-        if (receiverAddress == null)
-          return res.json({
-            success: "success",
-            showableMessage: "Receiver Wallet not found",
-            message: "receiver_wallet_not_found",
-          });
-        let toWallet = await Wallet.findOne({
-          user_id: receiverAddress.user_id,
-          coin_id: coin_id,
-          address: recipientAddress,
-        }).exec();
-        console.log(" toWallet", toWallet);
 
-        if (toWallet == null)
-          return res.json({
-            success: "success",
-            showableMessage: "Receiver Coin Wallet not found",
-            message: "receiver_wallet_not_found",
-          });
-        //////
+        // if (receiverAddress == null)
+        //   return res.json({
+        //     success: "success",
+        //     showableMessage: "Receiver Wallet not found",
+        //     message: "receiver_wallet_not_found",
+        //   });
+        let toWallet = null;
+        if (receiverAddress != null) {
+          toWallet = await Wallet.findOne({
+            user_id: receiverAddress.user_id,
+            coin_id: coin_id,
+            address: recipientAddress,
+          }).exec();
+        }
+
+        // if (toWallet == null)
+        //   return res.json({
+        //     success: "success",
+        //     showableMessage: "Receiver Coin Wallet not found",
+        //     message: "receiver_wallet_not_found",
+        //   });
+        ////
         const txData = {
           nonce: web3.utils.toHex(nonce),
           gasPrice: web3.utils.toHex(gasPrice),
@@ -255,7 +256,7 @@ const withdrawOther = async (req, res) => {
             let tokenBalanceFromWallet = await contractOfTransfer.methods
               .getUserTokenBalance(tokenContractAddress, fromAddress)
               .call();
-            console.log("tokenBalanceFromWallet", tokenBalanceFromWallet);
+
             tokenBalanceFromWallet = web3.utils.fromWei(tokenBalanceFromWallet);
             tokenBalanceFromWallet = parseFloat(tokenBalanceFromWallet);
             fromWallet.amount = tokenBalanceFromWallet;
@@ -264,8 +265,11 @@ const withdrawOther = async (req, res) => {
             await fromWallet.save();
 
             // console.log("toWallet", toWallet);
-            toWallet.amount = parseFloat(toWallet.amount) + parseFloat(amounts);
-            await toWallet.save();
+            if (toWallet != null) {
+              toWallet.amount =
+                parseFloat(toWallet.amount) + parseFloat(amounts);
+              await toWallet.save();
+            }
 
             await MailVerification.findOneAndUpdate(
               {
@@ -427,7 +431,7 @@ const withdrawNative = async (req, res) => {
   // Connect to the Binance Smart Chain testnet
   // const web3 = new Web3("https://data-seed-prebsc-1-s2.binance.org:8545");
   // const contractAddress = "0x02f643026bb22B8b7E6E381B0D346108E4A17B8B"; // Replace with the actual address on the testnet
-  const contractAddress = "0x759b1Ec87ECE6756C6a6B99BC324f43D1c7Dd028"; // Replace with the actual address on the testnet
+  const contractAddress = process.env.contractAddress; // Replace with the actual address on the testnet
 
   const getUserWallet = await WalletAddress.findOne({
     user_id: user_id,
@@ -497,25 +501,23 @@ const withdrawNative = async (req, res) => {
   }).exec();
   console.log("receiverAddress", receiverAddress);
   // console.log("wallet_address", receiverAddress.wallet_address);
-  if (receiverAddress == null)
-    return res.json({
-      success: "success",
-      showableMessage: "Receiver Wallet not found",
-      message: "receiver_wallet_not_found",
-    });
-  let toWallet = await Wallet.findOne({
-    user_id: receiverAddress.user_id,
-    coin_id: coin_id,
-    address: recipientAddress,
-  }).exec();
-  console.log(" toWallet", toWallet);
+  let toWallet = null;
+  if (receiverAddress != null) {
+    toWallet = await Wallet.findOne({
+      user_id: receiverAddress.user_id,
+      coin_id: coin_id,
+      address: recipientAddress,
+    }).exec();
+  }
 
-  if (toWallet == null)
-    return res.json({
-      success: "success",
-      showableMessage: "Receiver Coin Wallet not found",
-      message: "receiver_wallet_not_found",
-    });
+  // console.log(" toWallet", toWallet);
+
+  // if (toWallet == null)
+  //   return res.json({
+  //     success: "success",
+  //     showableMessage: "Receiver Coin Wallet not found",
+  //     message: "receiver_wallet_not_found",
+  //   });
 
   const sendSignTransaction = async (fromAddress) => {
     try {
@@ -563,7 +565,7 @@ const withdrawNative = async (req, res) => {
         .send({
           from: fromAddress,
           gas: gasLimit,
-          gasPrice: web3.utils.toWei(gasPrice, "gwei"),
+          gasPrice: web3.utils.fromWei(gasPrice, "gwei"),
           value: web3.utils.toWei(total.toString(), "ether"),
         });
       let data = new Withdraw({
@@ -592,9 +594,12 @@ const withdrawNative = async (req, res) => {
       //   parseFloat(fromWallet.amount) - parseFloat(total)
       // );
       await fromWallet.save();
-      console.log("toWallet", toWallet);
-      toWallet.amount = parseFloat(toWallet.amount) + parseFloat(amounts);
-      await toWallet.save();
+      // console.log("toWallet", toWallet);
+      if (toWallet != null) {
+        toWallet.amount = parseFloat(toWallet.amount) + parseFloat(amounts);
+        await toWallet.save();
+      }
+
       await MailVerification.findOneAndUpdate(
         {
           user_id: user_id,

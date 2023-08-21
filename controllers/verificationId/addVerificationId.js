@@ -1,16 +1,16 @@
 const VerificationIdModel = require("../../models/VerificationId");
 const authFile = require("../../auth.js");
-const AWS = require("aws-sdk");
+// const AWS = require("aws-sdk");
 
-const s3Client = new AWS.S3({
-  accessKeyId: "your_access_key_id",
-  secretAccessKey: "your_secret_access_id",
-  region: "region",
-});
+// const s3Client = new AWS.S3({
+//   accessKeyId: "your_access_key_id",
+//   secretAccessKey: "your_secret_access_id",
+//   region: "region",
+// });
 
-const params = {
-  Bucket: "yourBucketName",
-};
+// const params = {
+//   Bucket: "yourBucketName",
+// };
 
 const addVerificationId = async (req, res) => {
   const apiKey = req.body.apiKey;

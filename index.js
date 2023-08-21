@@ -223,7 +223,7 @@ const DeleteAccountTest = require("./controllers/auth/deleteAccountTest");
 
 const clearKYCAndRecidency = require("./controllers/kyc/clearKYCAndRecidency.js");
 
-const UploadKYC = require("./controllers/kyc/UploadKYC");
+// const UploadKYC = require("./controllers/kyc/UploadKYC");
 const UploadRecidency = require("./controllers/kyc/uploadRecidency");
 
 const marketingMailStatus = require("./controllers/marketingMails/mailStatus");
@@ -294,6 +294,10 @@ const {
 const checkUser = require("./controllers/auth/checkUser.js");
 const getCoinInfoAllNetworks = require("./controllers/coin/getCoinAllNetworks.js");
 const getCoinInfoForNetwork = require("./controllers/coin/getCoinInfoOfNetwork.js");
+const GetAllDepositHistory = require("./controllers/deposit/getAllDeposit.js");
+const getAllDepositHistory = require("./controllers/deposit/getAllDeposit.js");
+const getAllOrdersByGroup = require("./controllers/orders/getAllOrdersbyGroup.js");
+const checkZFTDeposit = require("./CronController/checkDeposits/checkZFTDeposit.js");
 
 route.use(
   session({
@@ -358,7 +362,7 @@ route.all("/getUserNotifications", getUserNotification);
 route.all("/readUserNotification", readUserNotification);
 
 route.all("/getVerificationIds", upload.any(), getVerificationIds);
-route.all("/addVerificationId", upload.any(), addVerificationId);
+// route.all("/addVerificationId", upload.any(), addVerificationId);
 
 route.all("/addAvatar", addAvatar);
 route.all("/getAvatar", getAvatar);
@@ -417,8 +421,8 @@ route.post("/addBonusType", addBonusType);
 route.post("/addBonus", addBonus);
 route.post("/getBonusHistory", getBonusHistory);
 
-route.all("/UploadKYC", upload.any(), UploadKYC);
-route.all("/idverification", upload.any(), UploadKYC);
+// route.all("/UploadKYC", upload.any(), UploadKYC);
+// route.all("/idverification", upload.any(), UploadKYC);
 route.all("/UploadRecidency", upload.any(), UploadRecidency);
 
 //AUTH
@@ -474,6 +478,7 @@ route.all("/searchPosts", searchPosts);
 //Trade Modules
 route.all("/getOrders", upload.none(), getOrders);
 route.all("/getAllOrders", upload.none(), getAllOrders);
+route.all("/getAllOrdersByGroup", upload.none(), getAllOrdersByGroup);
 route.post("/getClosedMarginOrders", getClosedMarginOrders);
 route.post("/getOpenMarginOrders", getOpenMarginOrders);
 route.post("/closeMarginOrder", closeMarginOrder);
@@ -523,7 +528,7 @@ route.post("/deleteOneStepWithdraw", deleteOneStepWithdraw);
 route.post("/editOneStepWithdraw", editOneStepWithdraw);
 route.post("/getOneStepWithdraw", getOneStepWithdraw);
 route.post("/checklast24hourswithdraws", checklast24hourswithdraws);
-
+route.all("/depositZFT", checkZFTDeposit);
 route.post("/editWithdrawalWhiteList", editWithdrawalWhiteList);
 route.post("/getWithdrawalWhiteList", getWithdrawalWhiteList);
 route.all("/addNotification", upload.none(), addNotification);
@@ -634,6 +639,7 @@ route.all("/addWithdraw", upload.none(), addWithdraw);
 route.all("/getDepositsUSDT", upload.none(), getDepositsUSDT);
 
 route.all("/depositHistory", upload.none(), GetDepositHistory);
+route.all("/getAllDepositHistory", upload.none(), getAllDepositHistory);
 route.all("/withdrawHistory", upload.none(), GetWithdrawHistory);
 
 route.post("/createApplicant", upload.none(), createApplicant);

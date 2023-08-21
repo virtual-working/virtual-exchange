@@ -11,10 +11,9 @@ const getAllOrders = async function (req, res) {
       message: "Forbidden 403",
     });
 
-  const orders = await Orders.find({ user_id: req.body.user_id })
-    .sort({ createdAt: -1 })
-    .lean();
-  res.json({ status: "success", data: orders });
+  // const orders = await Orders.find({ user_id: req.body.user_id })
+  const orders = await Orders.find().sort({ createdAt: -1 }).lean();
+  res.json({ status: "success", showableMessage: "success", data: orders });
 };
 
 module.exports = getAllOrders;

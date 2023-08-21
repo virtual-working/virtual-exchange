@@ -71,6 +71,100 @@
   { "stateMutability": "payable", "type": "fallback" },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_amountReceiver",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "uint256", "name": "_commission", "type": "uint256" },
+      { "internalType": "uint256", "name": "_totalTokens", "type": "uint256" }
+    ],
+    "name": "BUY",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "receiveToken_A",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "_receiveToken", "type": "uint256" },
+      { "internalType": "address", "name": "sendToken_B", "type": "address" },
+      { "internalType": "address", "name": "seller_", "type": "address" },
+      { "internalType": "uint256", "name": "_sendTokens", "type": "uint256" }
+    ],
+    "name": "BUYToken",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "BuyPayOrder",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token_B", "type": "address" },
+      { "internalType": "address", "name": "buyer_", "type": "address" },
+      { "internalType": "uint256", "name": "_totalTokens", "type": "uint256" }
+    ],
+    "name": "BuyTokenOrder",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_tokenReceiver",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "uint256", "name": "_totalTokens", "type": "uint256" },
+      { "internalType": "uint256", "name": "_tokenAmount", "type": "uint256" }
+    ],
+    "name": "SELL",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "receiveToken_A",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "_receiveToken", "type": "uint256" },
+      { "internalType": "address", "name": "sendToken_B", "type": "address" },
+      { "internalType": "address", "name": "buyer_", "type": "address" },
+      { "internalType": "uint256", "name": "_sendTokens", "type": "uint256" }
+    ],
+    "name": "SELLToken",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token_A", "type": "address" },
+      { "internalType": "uint256", "name": "_totalTokens", "type": "uint256" }
+    ],
+    "name": "SellTokenOrder",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "address", "name": "_user", "type": "address" },
       { "internalType": "uint256", "name": "_commission", "type": "uint256" }
     ],

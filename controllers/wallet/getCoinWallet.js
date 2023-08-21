@@ -72,7 +72,7 @@ const getCoinWallet = async function (req, res) {
     },
     { private_key: 0, _id: 0 }
   ).exec();
-  console.log("_wallets", _wallets);
+  // console.log("_wallets", _wallets);
   if (_wallets.length == 0)
     return res.json({
       status: "success",

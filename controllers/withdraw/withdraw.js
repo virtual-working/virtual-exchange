@@ -317,9 +317,10 @@ const withdraw = async (req, res) => {
         //// testing fund transfer
 
         // Create a new instance of Web3 and connect to the Binance Smart Chain network
-        const web3 = new Web3(
-          "https://data-seed-prebsc-1-s2.binance.org:8545/"
-        );
+        // const web3 = new Web3(
+        //   "https://data-seed-prebsc-1-s2.binance.org:8545/"
+        // );
+        const web3 = new Web3(process.env.web3Url);
         // console.log("web3", web3.eth);
         // const contract = new web3.eth.Contract(
         //   contractABI,
